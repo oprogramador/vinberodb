@@ -15,7 +15,16 @@
     "type": "git",
     "url": "git+https://github.com/oprogramador/grapedb.git"
   },
-  "keywords": ["distributed", "object", "database", "orm", "odm", "document", "key", "value"],
+  "keywords": [
+    "distributed",
+    "object",
+    "database",
+    "orm",
+    "odm",
+    "document",
+    "key",
+    "value"
+  ],
   "author": "oprogramador",
   "license": "MIT",
   "bugs": {
