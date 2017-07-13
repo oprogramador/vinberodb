@@ -3,76 +3,78 @@ import _ from 'lodash';
 import levelup from 'levelup';
 import uuid from 'uuid';
 
-/* eslint-disable no-use-before-define */
-
-const getType = (value) => {
-  if (value === null) {
-    return 'null';
-  }
-  if (Array.isArray(value)) {
-    return 'array';
+class Manager {
+  constructor(db, logger) {
+    this.db = db;
+    this.logger = logger;
+    this.map = new Map();
   }
 
-  return typeof value;
-};
+  getType(value) {
+    if (value === null) {
+      return 'null';
+    }
+    if (Array.isArray(value)) {
+      return 'array';
+    }
 
-const saveSimpleValue = (context, key, value) => {
-  const type = getType(value);
-  const valueToSave = ['object', 'array'].includes(type) ? JSON.stringify(value) : value;
-
-  return context.db.put(key, `${type}:${valueToSave}`)
-    .then(() => context.logger.info(`saved ${key}`));
-};
-
-const createId = (context, element) => {
-  const savedKey = context.map.get(element);
-  if (savedKey) {
-    return savedKey;
-  }
-  const newKey = uuid.v4();
-  context.map.set(element, newKey);
-
-  return newKey;
-};
-
-const saveArray = (context, key, value) => {
-  const ids = value.map(element => createId(context, element));
-
-  return Promise.all([
-    saveSimpleValue(context, key, ids),
-    ...ids.map((id, i) => saveAny(context, id, value[i])),
-  ]);
-};
-
-const saveObject = (context, key, value) => {
-  const ids = _.mapValues(value, element => createId(context, element));
-
-  return Promise.all([
-    saveSimpleValue(context, key, ids),
-    ..._.map(ids, (id, innerKey) => saveAny(context, id, value[innerKey])),
-  ]);
-};
-
-const saveAny = (context, key, value) => {
-  const type = getType(value);
-  if (type === 'array') {
-    return saveArray(context, key, value);
-  }
-  if (type === 'object') {
-    return saveObject(context, key, value);
+    return typeof value;
   }
 
-  return saveSimpleValue(context, key, value);
-};
+  saveSimpleValue(key, value) {
+    const type = this.getType(value);
+    const valueToSave = ['object', 'array'].includes(type) ? JSON.stringify(value) : value;
+
+    return this.db.put(key, `${type}:${valueToSave}`)
+      .then(() => this.logger.info(`saved ${key}`));
+  }
+
+  createId(element) {
+    const savedKey = this.map.get(element);
+    if (savedKey) {
+      return savedKey;
+    }
+    const newKey = uuid.v4();
+    this.map.set(element, newKey);
+
+    return newKey;
+  }
+
+  saveArray(key, value) {
+    const ids = value.map(element => this.createId(element));
+
+    return Promise.all([
+      this.saveSimpleValue(key, ids),
+      ...ids.map((id, i) => this.saveAny(id, value[i])),
+    ]);
+  }
+
+  saveObject(key, value) {
+    const ids = _.mapValues(value, element => this.createId(element));
+
+    return Promise.all([
+      this.saveSimpleValue(key, ids),
+      ..._.map(ids, (id, innerKey) => this.saveAny(id, value[innerKey])),
+    ]);
+  }
+
+  saveAny(key, value) {
+    const type = this.getType(value);
+    if (type === 'array') {
+      return this.saveArray(key, value);
+    }
+    if (type === 'object') {
+      return this.saveObject(key, value);
+    }
+
+    return this.saveSimpleValue(key, value);
+  }
+}
 
 const saveInLevelDB = (databaseDirectory, logger) => (key, value) => {
   const db = LevelPromise(levelup(databaseDirectory));
   const rootKey = 'root';
-  const context = {
-    db,
-    logger,
-    map: new Map(),
-  };
+  const manager = new Manager(db, logger);
 
   return db.get(rootKey)
     .catch((error) => {
@@ -83,8 +85,8 @@ const saveInLevelDB = (databaseDirectory, logger) => (key, value) => {
       throw error;
     })
     .then(root => JSON.parse(root.replace(/^array:/, '')))
-    .then(root => saveSimpleValue(context, rootKey, [...root, key]))
-    .then(() => saveAny(context, key, value))
+    .then(root => manager.saveSimpleValue(rootKey, [...root, key]))
+    .then(() => manager.saveAny(key, value))
     .then(() => db.close())
     .catch(error => logger.error(error));
 };
