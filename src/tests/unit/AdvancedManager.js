@@ -39,9 +39,6 @@ describe('AdvancedManager', () => {
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`boolean:${value}`));
   });
 
-  it.skip('saves a null', () => {
-  });
-
   it('saves an array', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
