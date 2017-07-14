@@ -1,7 +1,9 @@
-import saveInLevelDB from 'grapedb/storage/saveInLevelDB';
+import AdvancedManager from 'grapedb/storage/AdvancedManager';
+import LevelSimpleManager from 'grapedb/storage/LevelSimpleManager';
 
 export {
-  saveInLevelDB,
+  AdvancedManager,
+  LevelSimpleManager,
 };
 
 export default null;

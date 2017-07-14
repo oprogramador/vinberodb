@@ -1,8 +1,12 @@
+import { AdvancedManager, LevelSimpleManager } from 'grapedb/index';
 import expect from 'grapedb/tests/expect';
-import { saveInLevelDB } from 'grapedb/index';
 
 describe('index', () => {
-  it('returns saveInLevelDB', () => {
-    expect(saveInLevelDB).to.be.a('function');
+  it('returns AdvancedManager', () => {
+    expect(AdvancedManager).to.be.a('function');
+  });
+
+  it('returns LevelSimpleManager', () => {
+    expect(LevelSimpleManager).to.be.a('function');
   });
 });

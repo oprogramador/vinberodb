@@ -1,9 +1,7 @@
-import LevelPromise from 'level-promise';
 import _ from 'lodash';
-import levelup from 'levelup';
 import uuid from 'uuid';
 
-class Manager {
+class AdvancedManager {
   constructor(db, logger) {
     this.db = db;
     this.logger = logger;
@@ -25,7 +23,7 @@ class Manager {
     const type = this.getType(value);
     const valueToSave = ['object', 'array'].includes(type) ? JSON.stringify(value) : value;
 
-    return this.db.put(key, `${type}:${valueToSave}`)
+    return this.db.set(key, `${type}:${valueToSave}`)
       .then(() => this.logger.info(`saved ${key}`));
   }
 
@@ -69,26 +67,11 @@ class Manager {
 
     return this.saveSimpleValue(key, value);
   }
+
+  set(key, value) {
+    return this.saveAny(key, value)
+      .catch(error => this.logger.error(error));
+  }
 }
 
-const saveInLevelDB = (databaseDirectory, logger) => (key, value) => {
-  const db = LevelPromise(levelup(databaseDirectory));
-  const rootKey = 'root';
-  const manager = new Manager(db, logger);
-
-  return db.get(rootKey)
-    .catch((error) => {
-      if (error instanceof levelup.errors.NotFoundError) {
-        return 'array:[]';
-      }
-
-      throw error;
-    })
-    .then(root => JSON.parse(root.replace(/^array:/, '')))
-    .then(root => manager.saveSimpleValue(rootKey, [...root, key]))
-    .then(() => manager.saveAny(key, value))
-    .then(() => db.close())
-    .catch(error => logger.error(error));
-};
-
-export default saveInLevelDB;
+export default AdvancedManager;
