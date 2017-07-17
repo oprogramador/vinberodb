@@ -6,6 +6,7 @@ class AdvancedManager {
     this.db = db;
     this.logger = logger;
     this.map = new Map();
+    this.saved = new Map();
   }
 
   getType(value) {
@@ -28,7 +29,7 @@ class AdvancedManager {
   }
 
   createId(element) {
-    const savedKey = this.map.get(element);
+    const savedKey = this.map.get(element) || this.saved.get(element);
     if (savedKey) {
       return savedKey;
     }
@@ -57,6 +58,10 @@ class AdvancedManager {
   }
 
   saveAny(key, value) {
+    if (this.saved.get(value)) {
+      return Promise.resolve();
+    }
+    this.saved.set(value, key);
     const type = this.getType(value);
     if (type === 'array') {
       return this.saveArray(key, value);

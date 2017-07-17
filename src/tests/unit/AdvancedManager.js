@@ -137,6 +137,29 @@ describe('AdvancedManager', () => {
       .then(({ foo }) => expect(simpleManager.get(foo)).to.eventually.equal('string:bar'));
   });
 
+  it('saves an object with self-reference', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-main-key';
+    const object = {
+      foo1: 'foo-value',
+    };
+    object.foo2 = object;
+
+    return manager.set(key, object)
+      .then(() => simpleManager.get(key))
+      .then((value) => {
+        expect(value).to.startWith('object:');
+
+        return JSON.parse(value.replace(/object:/, ''));
+      })
+      .then(({ foo1, foo2 }) => {
+        expect(foo2).to.equal(key);
+
+        return expect(simpleManager.get(foo1)).to.eventually.equal('string:foo-value');
+      });
+  });
+
   it('saves nested objects', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
