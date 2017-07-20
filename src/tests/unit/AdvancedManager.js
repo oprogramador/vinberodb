@@ -19,6 +19,16 @@ describe('AdvancedManager', () => {
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`string:${value}`));
   });
 
+  it('gets a string', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = 'foo-value';
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+  });
+
   it('saves a number', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
@@ -29,6 +39,16 @@ describe('AdvancedManager', () => {
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`number:${value}`));
   });
 
+  it('gets a number', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = 234;
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+  });
+
   it('saves a boolean', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
@@ -37,6 +57,16 @@ describe('AdvancedManager', () => {
 
     return manager.set(key, value)
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`boolean:${value}`));
+  });
+
+  it('gets a boolean', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = true;
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.equal(value));
   });
 
   it('saves an array', () => {
@@ -58,6 +88,16 @@ describe('AdvancedManager', () => {
       ]));
   });
 
+  it('gets an array', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = [1, 40, 3];
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+  });
+
   it('saves an object', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
@@ -75,6 +115,20 @@ describe('AdvancedManager', () => {
         expect(simpleManager.get(bar)).to.eventually.equal('string:bar-value'),
         expect(simpleManager.get(baz)).to.eventually.equal('string:baz-value'),
       ]));
+  });
+
+  it('gets an object', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      bar: 'bar-1',
+      baz: 'lorem ipsum',
+      foo: 'foo-1',
+    };
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
   });
 
   it('saves an array with multiple references to the same value', () => {
@@ -107,6 +161,21 @@ describe('AdvancedManager', () => {
       .then(({ foo }) => expect(simpleManager.get(foo)).to.eventually.equal('string:bar'));
   });
 
+  it('gets an array with multiple references to the same value', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const referenced = { foo: 'bar' };
+    const value = [
+      'lorem ipsum',
+      referenced,
+      referenced,
+    ];
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+  });
+
   it('saves an object with multiple references to the same value', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
@@ -137,6 +206,21 @@ describe('AdvancedManager', () => {
       .then(({ foo }) => expect(simpleManager.get(foo)).to.eventually.equal('string:bar'));
   });
 
+  it('gets an object with multiple references to the same value', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const referenced = { foo1: 'bar1' };
+    const value = {
+      bar: referenced,
+      baz: 123,
+      foo: referenced,
+    };
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+  });
+
   it('saves an object with self-reference', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
@@ -158,6 +242,19 @@ describe('AdvancedManager', () => {
 
         return expect(simpleManager.get(foo1)).to.eventually.equal('string:foo-value');
       });
+  });
+
+  it.skip('gets an object with self-reference', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: 'foo-value',
+    };
+    value.foo2 = value;
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
   });
 
   it('saves nested objects', () => {
@@ -208,5 +305,32 @@ describe('AdvancedManager', () => {
         expect(simpleManager.get(foo)).to.eventually.equal('string:foo-value-2-foo-2'),
         expect(simpleManager.get(bar)).to.eventually.equal('string:foo-value-2-bar-2'),
       ]));
+  });
+
+  it('gets nested objects', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
   });
 });

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import bluebird from 'bluebird';
 import uuid from 'uuid';
 
 class AdvancedManager {
@@ -76,6 +77,39 @@ class AdvancedManager {
   set(key, value) {
     return this.saveAny(key, value)
       .catch(error => this.logger.error(error));
+  }
+
+  splitValue(value) {
+    const position = value.indexOf(':');
+
+    return [
+      value.substr(0, position),
+      value.substr(position + 1),
+    ];
+  }
+
+  getExactValue(value) {
+    const [type, stringified] = this.splitValue(value);
+
+    if (type === 'boolean') {
+      return Boolean(stringified);
+    }
+    if (type === 'number') {
+      return Number(stringified);
+    }
+    if (type === 'array') {
+      return Promise.all(JSON.parse(stringified).map(key => this.get(key)));
+    }
+    if (type === 'object') {
+      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this.get(key)));
+    }
+
+    return stringified;
+  }
+
+  get(key) {
+    return this.db.get(key)
+      .then(value => this.getExactValue(value));
   }
 }
 
