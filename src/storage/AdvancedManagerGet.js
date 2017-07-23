@@ -11,7 +11,7 @@ class AdvancedManagerGet {
     this.db = db;
     this.logger = logger;
     this.retrieved = {};
-    this.values = {};
+    this.references = {};
   }
 
   [splitValue](value) {
@@ -56,7 +56,7 @@ class AdvancedManagerGet {
 
   [resolveSelfReferences]({ key, value, isSelfReference }) {
     if (isSelfReference) {
-      return this.values[key];
+      return this.references[key];
     }
 
     if (typeof value !== 'object') {
@@ -64,7 +64,7 @@ class AdvancedManagerGet {
     }
 
     const reference = Array.isArray(value) ? [] : {};
-    this.values[key] = reference;
+    this.references[key] = reference;
 
     Object.assign(
       reference,

@@ -12,7 +12,7 @@ class AdvancedManagerSet {
   constructor(db, logger) {
     this.db = db;
     this.logger = logger;
-    this.map = new Map();
+    this.toSave = new Map();
     this.saved = new Map();
   }
 
@@ -36,12 +36,12 @@ class AdvancedManagerSet {
   }
 
   [createId](element) {
-    const savedKey = this.map.get(element) || this.saved.get(element);
+    const savedKey = this.toSave.get(element) || this.saved.get(element);
     if (savedKey) {
       return savedKey;
     }
     const newKey = uuid.v4();
-    this.map.set(element, newKey);
+    this.toSave.set(element, newKey);
 
     return newKey;
   }
