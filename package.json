@@ -1,6 +1,6 @@
 {
   "name": "grapedb",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Distributed object database",
   "main": "build/index.js",
   "scripts": {
