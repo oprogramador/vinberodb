@@ -2,6 +2,17 @@ import _ from 'lodash';
 import bluebird from 'bluebird';
 import uuid from 'uuid';
 
+const getType = Symbol('getType');
+const saveSimpleValue = Symbol('saveSimpleValue');
+const createId = Symbol('createId');
+const saveArray = Symbol('saveArray');
+const saveObject = Symbol('saveObject');
+const saveAny = Symbol('saveAny');
+const splitValue = Symbol('splitValue');
+const getExactValue = Symbol('getExactValue');
+const getOne = Symbol('getOne');
+const resolveSelfReferences = Symbol('resolveSelfReferences');
+
 class AdvancedManager {
   constructor(db, logger) {
     this.db = db;
@@ -10,7 +21,7 @@ class AdvancedManager {
     this.saved = new Map();
   }
 
-  getType(value) {
+  [getType](value) {
     if (value === null) {
       return 'null';
     }
@@ -21,15 +32,15 @@ class AdvancedManager {
     return typeof value;
   }
 
-  saveSimpleValue(key, value) {
-    const type = this.getType(value);
+  [saveSimpleValue](key, value) {
+    const type = this[getType](value);
     const valueToSave = ['object', 'array'].includes(type) ? JSON.stringify(value) : value;
 
     return this.db.set(key, `${type}:${valueToSave}`)
       .then(() => this.logger.info(`saved ${key}`));
   }
 
-  createId(element) {
+  [createId](element) {
     const savedKey = this.map.get(element) || this.saved.get(element);
     if (savedKey) {
       return savedKey;
@@ -40,46 +51,46 @@ class AdvancedManager {
     return newKey;
   }
 
-  saveArray(key, value) {
-    const ids = value.map(element => this.createId(element));
+  [saveArray](key, value) {
+    const ids = value.map(element => this[createId](element));
 
     return Promise.all([
-      this.saveSimpleValue(key, ids),
-      ...ids.map((id, i) => this.saveAny(id, value[i])),
+      this[saveSimpleValue](key, ids),
+      ...ids.map((id, i) => this[saveAny](id, value[i])),
     ]);
   }
 
-  saveObject(key, value) {
-    const ids = _.mapValues(value, element => this.createId(element));
+  [saveObject](key, value) {
+    const ids = _.mapValues(value, element => this[createId](element));
 
     return Promise.all([
-      this.saveSimpleValue(key, ids),
-      ..._.map(ids, (id, innerKey) => this.saveAny(id, value[innerKey])),
+      this[saveSimpleValue](key, ids),
+      ..._.map(ids, (id, innerKey) => this[saveAny](id, value[innerKey])),
     ]);
   }
 
-  saveAny(key, value) {
+  [saveAny](key, value) {
     if (this.saved.get(value)) {
       return Promise.resolve();
     }
     this.saved.set(value, key);
-    const type = this.getType(value);
+    const type = this[getType](value);
     if (type === 'array') {
-      return this.saveArray(key, value);
+      return this[saveArray](key, value);
     }
     if (type === 'object') {
-      return this.saveObject(key, value);
+      return this[saveObject](key, value);
     }
 
-    return this.saveSimpleValue(key, value);
+    return this[saveSimpleValue](key, value);
   }
 
   set(key, value) {
-    return this.saveAny(key, value)
+    return this[saveAny](key, value)
       .catch(error => this.logger.error(error));
   }
 
-  splitValue(value) {
+  [splitValue](value) {
     const position = value.indexOf(':');
 
     return [
@@ -88,8 +99,8 @@ class AdvancedManager {
     ];
   }
 
-  getExactValue(value) {
-    const [type, stringified] = this.splitValue(value);
+  [getExactValue](value) {
+    const [type, stringified] = this[splitValue](value);
 
     if (type === 'boolean') {
       return Boolean(stringified);
@@ -98,28 +109,28 @@ class AdvancedManager {
       return Number(stringified);
     }
     if (type === 'array') {
-      return Promise.all(JSON.parse(stringified).map(key => this.getOne(key)));
+      return Promise.all(JSON.parse(stringified).map(key => this[getOne](key)));
     }
     if (type === 'object') {
-      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this.getOne(key)));
+      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this[getOne](key)));
     }
 
     return stringified;
   }
 
-  getOne(key) {
+  [getOne](key) {
     if (this.retrieved[key]) {
       return { isSelfReference: true, key };
     }
 
     this.retrieved[key] = this.db.get(key)
-      .then(value => this.getExactValue(value));
+      .then(value => this[getExactValue](value));
 
     return this.retrieved[key]
       .then(value => ({ key, value }));
   }
 
-  resolveSelfReferences({ key, value, isSelfReference }) {
+  [resolveSelfReferences]({ key, value, isSelfReference }) {
     if (isSelfReference) {
       return this.values[key];
     }
@@ -134,8 +145,8 @@ class AdvancedManager {
     Object.assign(
       reference,
       Array.isArray(value)
-        ? value.map(innerValue => this.resolveSelfReferences(innerValue))
-        : _.mapValues(value, innerValue => this.resolveSelfReferences(innerValue))
+        ? value.map(innerValue => this[resolveSelfReferences](innerValue))
+        : _.mapValues(value, innerValue => this[resolveSelfReferences](innerValue))
     );
 
     return reference;
@@ -145,8 +156,8 @@ class AdvancedManager {
     this.retrieved = {};
     this.values = {};
 
-    return this.getOne(key)
-      .then(object => this.resolveSelfReferences(object));
+    return this[getOne](key)
+      .then(object => this[resolveSelfReferences](object));
   }
 }
 
