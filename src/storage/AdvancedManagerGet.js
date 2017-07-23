@@ -1,17 +1,21 @@
 import _ from 'lodash';
 import bluebird from 'bluebird';
 
+const db = Symbol('db');
+const logger = Symbol('logger');
+const retrieved = Symbol('retrieved');
+const references = Symbol('references');
 const splitValue = Symbol('splitValue');
 const getExactValue = Symbol('getExactValue');
 const getOne = Symbol('getOne');
 const resolveSelfReferences = Symbol('resolveSelfReferences');
 
 class AdvancedManagerGet {
-  constructor(db, logger) {
-    this.db = db;
-    this.logger = logger;
-    this.retrieved = {};
-    this.references = {};
+  constructor(_db, _logger) {
+    this[db] = _db;
+    this[logger] = _logger;
+    this[retrieved] = {};
+    this[references] = {};
   }
 
   [splitValue](value) {
@@ -43,20 +47,20 @@ class AdvancedManagerGet {
   }
 
   [getOne](key) {
-    if (this.retrieved[key]) {
+    if (this[retrieved][key]) {
       return { isSelfReference: true, key };
     }
 
-    this.retrieved[key] = this.db.get(key)
+    this[retrieved][key] = this[db].get(key)
       .then(value => this[getExactValue](value));
 
-    return this.retrieved[key]
+    return this[retrieved][key]
       .then(value => ({ key, value }));
   }
 
   [resolveSelfReferences]({ key, value, isSelfReference }) {
     if (isSelfReference) {
-      return this.references[key];
+      return this[references][key];
     }
 
     if (typeof value !== 'object') {
@@ -64,7 +68,7 @@ class AdvancedManagerGet {
     }
 
     const reference = Array.isArray(value) ? [] : {};
-    this.references[key] = reference;
+    this[references][key] = reference;
 
     Object.assign(
       reference,

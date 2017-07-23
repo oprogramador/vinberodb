@@ -1,6 +1,10 @@
 import _ from 'lodash';
 import uuid from 'uuid';
 
+const db = Symbol('db');
+const logger = Symbol('logger');
+const toSave = Symbol('toSave');
+const saved = Symbol('saved');
 const getType = Symbol('getType');
 const saveSimpleValue = Symbol('saveSimpleValue');
 const createId = Symbol('createId');
@@ -9,11 +13,11 @@ const saveObject = Symbol('saveObject');
 const saveAny = Symbol('saveAny');
 
 class AdvancedManagerSet {
-  constructor(db, logger) {
-    this.db = db;
-    this.logger = logger;
-    this.toSave = new Map();
-    this.saved = new Map();
+  constructor(_db, _logger) {
+    this[db] = _db;
+    this[logger] = _logger;
+    this[toSave] = new Map();
+    this[saved] = new Map();
   }
 
   [getType](value) {
@@ -31,17 +35,17 @@ class AdvancedManagerSet {
     const type = this[getType](value);
     const valueToSave = ['object', 'array'].includes(type) ? JSON.stringify(value) : value;
 
-    return this.db.set(key, `${type}:${valueToSave}`)
-      .then(() => this.logger.info(`saved ${key}`));
+    return this[db].set(key, `${type}:${valueToSave}`)
+      .then(() => this[logger].info(`saved ${key}`));
   }
 
   [createId](element) {
-    const savedKey = this.toSave.get(element) || this.saved.get(element);
+    const savedKey = this[toSave].get(element) || this[saved].get(element);
     if (savedKey) {
       return savedKey;
     }
     const newKey = uuid.v4();
-    this.toSave.set(element, newKey);
+    this[toSave].set(element, newKey);
 
     return newKey;
   }
@@ -65,10 +69,10 @@ class AdvancedManagerSet {
   }
 
   [saveAny](key, value) {
-    if (this.saved.get(value)) {
+    if (this[saved].get(value)) {
       return Promise.resolve();
     }
-    this.saved.set(value, key);
+    this[saved].set(value, key);
     const type = this[getType](value);
     if (type === 'array') {
       return this[saveArray](key, value);
@@ -82,7 +86,7 @@ class AdvancedManagerSet {
 
   set(key, value) {
     return this[saveAny](key, value)
-      .catch(error => this.logger.error(error));
+      .catch(error => this[logger].error(error));
   }
 }
 
