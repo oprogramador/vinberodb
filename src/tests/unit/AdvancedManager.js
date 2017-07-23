@@ -244,7 +244,7 @@ describe('AdvancedManager', () => {
       });
   });
 
-  it.skip('gets an object with self-reference', () => {
+  it('gets an object with self-reference', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
     const key = 'foo-key';

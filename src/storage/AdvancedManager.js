@@ -98,18 +98,55 @@ class AdvancedManager {
       return Number(stringified);
     }
     if (type === 'array') {
-      return Promise.all(JSON.parse(stringified).map(key => this.get(key)));
+      return Promise.all(JSON.parse(stringified).map(key => this.getOne(key)));
     }
     if (type === 'object') {
-      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this.get(key)));
+      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this.getOne(key)));
     }
 
     return stringified;
   }
 
-  get(key) {
-    return this.db.get(key)
+  getOne(key) {
+    if (this.retrieved[key]) {
+      return { isSelfReference: true, key };
+    }
+
+    this.retrieved[key] = this.db.get(key)
       .then(value => this.getExactValue(value));
+
+    return this.retrieved[key]
+      .then(value => ({ key, value }));
+  }
+
+  resolveSelfReferences({ key, value, isSelfReference }) {
+    if (isSelfReference) {
+      return this.values[key];
+    }
+
+    if (typeof value !== 'object') {
+      return value;
+    }
+
+    const reference = Array.isArray(value) ? [] : {};
+    this.values[key] = reference;
+
+    Object.assign(
+      reference,
+      Array.isArray(value)
+        ? value.map(innerValue => this.resolveSelfReferences(innerValue))
+        : _.mapValues(value, innerValue => this.resolveSelfReferences(innerValue))
+    );
+
+    return reference;
+  }
+
+  get(key) {
+    this.retrieved = {};
+    this.values = {};
+
+    return this.getOne(key)
+      .then(object => this.resolveSelfReferences(object));
   }
 }
 
