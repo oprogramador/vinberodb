@@ -1,4 +1,8 @@
-import { AdvancedManager, LevelSimpleManager } from 'grapedb/index';
+import {
+  AdvancedManager,
+  InMemorySimpleManager,
+  LevelSimpleManager,
+} from 'grapedb/index';
 import expect from 'grapedb/tests/expect';
 
 describe('index', () => {
@@ -8,5 +12,9 @@ describe('index', () => {
 
   it('returns LevelSimpleManager', () => {
     expect(LevelSimpleManager).to.be.a('function');
+  });
+
+  it('returns InMemorySimpleManager', () => {
+    expect(InMemorySimpleManager).to.be.a('function');
   });
 });
