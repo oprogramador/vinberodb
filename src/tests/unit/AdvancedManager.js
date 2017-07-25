@@ -19,6 +19,13 @@ describe('AdvancedManager', () => {
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`string:${value}`));
   });
 
+  it('gets null', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+
+    return expect(manager.get('non-existent')).to.eventually.be.null();
+  });
+
   it('gets a string', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);

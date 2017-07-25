@@ -28,6 +28,9 @@ class AdvancedManagerGet {
   }
 
   [getExactValue](value) {
+    if (value === null) {
+      return null;
+    }
     const [type, stringified] = this[splitValue](value);
 
     if (type === 'boolean') {
@@ -59,6 +62,9 @@ class AdvancedManagerGet {
   }
 
   [resolveSelfReferences]({ key, value, isSelfReference }) {
+    if (value === null) {
+      return null;
+    }
     if (isSelfReference) {
       return this[references][key];
     }
