@@ -45,7 +45,9 @@ class AdvancedManagerSet {
       return savedKey;
     }
     const newKey = uuid.v4();
-    this[toSave].set(element, newKey);
+    if (typeof element === 'object') {
+      this[toSave].set(element, newKey);
+    }
 
     return newKey;
   }
@@ -72,7 +74,9 @@ class AdvancedManagerSet {
     if (this[saved].get(value)) {
       return Promise.resolve();
     }
-    this[saved].set(value, key);
+    if (typeof value === 'object') {
+      this[saved].set(value, key);
+    }
     const type = this[getType](value);
     if (type === 'array') {
       return this[saveArray](key, value);

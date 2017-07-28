@@ -56,6 +56,35 @@ describe('AdvancedManager', () => {
       .then(() => expect(manager.get(key)).to.eventually.equal(value));
   });
 
+  it('gets zero', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = 0;
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+  });
+
+  it('gets repeated simple values in nested object', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo: {
+        bar: 1,
+        baz: 123,
+      },
+      foo2: {
+        bar: 'bar2',
+        baz: 1,
+      },
+    };
+
+    return manager.set(key, value)
+      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+  });
+
   it('saves a boolean', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
