@@ -32,8 +32,8 @@ The simple manager should have the following methods:
 - `set(key, value)` - value is always a string
 
 GrapeDB provides the following simple managers:
-`InMemorySimpleManager` - saves objects only in JavaScript memory (RAM)
-`LevelSimpleManager` - an adapter to [LevelDB](https://github.com/google/leveldb)
+- `InMemorySimpleManager` - saves objects only in JavaScript memory (RAM)
+- `LevelSimpleManager` - an adapter to [LevelDB](https://github.com/google/leveldb)
 
 Example usage:
 ```
