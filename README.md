@@ -69,3 +69,17 @@ const value = {
 manager.setComplex(key, value)
   .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
 ```
+
+Usage with LevelDB:
+```
+const { AdvancedManager, LevelSimpleManager } = require('grapedb');
+const LevelPromise = require('level-promise');
+const levelup = require('levelup');
+
+const logger = {
+  error: () => {},
+  info: () => {},
+};
+const db = LevelPromise(levelup('my-database'));
+const manager = new AdvancedManager(new LevelSimpleManager(db), logger);
+```
