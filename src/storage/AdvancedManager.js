@@ -10,12 +10,20 @@ class AdvancedManager {
     this[logger] = _logger;
   }
 
-  set(key, value) {
+  setComplex(key, value) {
     return new AdvancedManagerSet(this[db], this[logger]).set(key, value);
   }
 
-  get(key) {
+  getComplex(key) {
     return new AdvancedManagerGet(this[db], this[logger]).get(key);
+  }
+
+  set(key, value) {
+    return this[db].set(key, value);
+  }
+
+  get(key) {
+    return this[db].get(key);
   }
 }
 

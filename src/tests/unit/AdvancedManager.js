@@ -2,6 +2,7 @@ import AdvancedManager from 'grapedb/storage/AdvancedManager';
 import InMemorySimpleManager from 'grapedb/storage/InMemorySimpleManager';
 import expect from 'grapedb/tests/expect';
 import sinon from 'sinon';
+import testSimpleManager from 'grapedb/tests/generic/testSimpleManager';
 
 const logger = {
   error: sinon.spy(),
@@ -9,13 +10,15 @@ const logger = {
 };
 
 describe('AdvancedManager', () => {
+  testSimpleManager(() => new AdvancedManager(new InMemorySimpleManager(), logger));
+
   it('saves a string', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
     const key = 'foo-key';
     const value = 'foo-value';
 
-    return manager.set(key, value)
+    return manager.setComplex(key, value)
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`string:${value}`));
   });
 
@@ -23,7 +26,7 @@ describe('AdvancedManager', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);
 
-    return expect(manager.get('non-existent')).to.eventually.be.null();
+    return expect(manager.getComplex('non-existent')).to.eventually.be.null();
   });
 
   it('gets a string', () => {
@@ -32,8 +35,8 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = 'foo-value';
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.equal(value));
   });
 
   it('saves a number', () => {
@@ -42,7 +45,7 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = 123;
 
-    return manager.set(key, value)
+    return manager.setComplex(key, value)
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`number:${value}`));
   });
 
@@ -52,8 +55,8 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = 234;
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.equal(value));
   });
 
   it('gets zero', () => {
@@ -62,8 +65,8 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = 0;
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.equal(value));
   });
 
   it('gets repeated simple values in nested object', () => {
@@ -81,8 +84,8 @@ describe('AdvancedManager', () => {
       },
     };
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 
   it('saves a boolean', () => {
@@ -91,7 +94,7 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = true;
 
-    return manager.set(key, value)
+    return manager.setComplex(key, value)
       .then(() => expect(simpleManager.get(key)).to.eventually.equal(`boolean:${value}`));
   });
 
@@ -101,8 +104,8 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = true;
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.equal(value));
   });
 
   it('saves an array', () => {
@@ -110,7 +113,7 @@ describe('AdvancedManager', () => {
     const manager = new AdvancedManager(simpleManager, logger);
     const key = 'foo-key';
 
-    return manager.set(key, ['foo', 'bar', 'baz'])
+    return manager.setComplex(key, ['foo', 'bar', 'baz'])
       .then(() => simpleManager.get(key))
       .then((value) => {
         expect(value).to.startWith('array:');
@@ -130,8 +133,8 @@ describe('AdvancedManager', () => {
     const key = 'foo-key';
     const value = [1, 40, 3];
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 
   it('saves an object', () => {
@@ -139,7 +142,7 @@ describe('AdvancedManager', () => {
     const manager = new AdvancedManager(simpleManager, logger);
     const key = 'foo-key';
 
-    return manager.set(key, { bar: 'bar-value', baz: 'baz-value', foo: 'foo-value' })
+    return manager.setComplex(key, { bar: 'bar-value', baz: 'baz-value', foo: 'foo-value' })
       .then(() => simpleManager.get(key))
       .then((value) => {
         expect(value).to.startWith('object:');
@@ -163,8 +166,8 @@ describe('AdvancedManager', () => {
       foo: 'foo-1',
     };
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 
   it('saves an array with multiple references to the same value', () => {
@@ -177,7 +180,7 @@ describe('AdvancedManager', () => {
       referenced,
     ];
 
-    return manager.set(key, object)
+    return manager.setComplex(key, object)
       .then(() => simpleManager.get(key))
       .then((value) => {
         expect(value).to.startWith('array:');
@@ -208,8 +211,8 @@ describe('AdvancedManager', () => {
       referenced,
     ];
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 
   it('saves an object with multiple references to the same value', () => {
@@ -222,7 +225,7 @@ describe('AdvancedManager', () => {
       foo2: referenced,
     };
 
-    return manager.set(key, object)
+    return manager.setComplex(key, object)
       .then(() => simpleManager.get(key))
       .then((value) => {
         expect(value).to.startWith('object:');
@@ -253,8 +256,8 @@ describe('AdvancedManager', () => {
       foo: referenced,
     };
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 
   it('saves an object with self-reference', () => {
@@ -266,7 +269,7 @@ describe('AdvancedManager', () => {
     };
     object.foo2 = object;
 
-    return manager.set(key, object)
+    return manager.setComplex(key, object)
       .then(() => simpleManager.get(key))
       .then((value) => {
         expect(value).to.startWith('object:');
@@ -289,8 +292,8 @@ describe('AdvancedManager', () => {
     };
     value.foo2 = value;
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 
   it('saves nested objects', () => {
@@ -315,7 +318,7 @@ describe('AdvancedManager', () => {
       },
     };
 
-    return manager.set('aRootKey', objects)
+    return manager.setComplex('aRootKey', objects)
       .then(() => simpleManager.get('aRootKey'))
       .then(value => JSON.parse(value.replace(/^object:/, '')))
       .then(({ foo1, foo2 }) => Promise.all([
@@ -366,7 +369,7 @@ describe('AdvancedManager', () => {
       },
     };
 
-    return manager.set(key, value)
-      .then(() => expect(manager.get(key)).to.eventually.deep.equal(value));
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
   });
 });
