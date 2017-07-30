@@ -1,5 +1,6 @@
 import AdvancedManager from 'grapedb/storage/AdvancedManager';
 import InMemorySimpleManager from 'grapedb/storage/InMemorySimpleManager';
+import Reference from 'grapedb/storage/Reference';
 import expect from 'grapedb/tests/expect';
 import sinon from 'sinon';
 import testSimpleManager from 'grapedb/tests/generic/testSimpleManager';
@@ -371,5 +372,197 @@ describe('AdvancedManager', () => {
 
     return manager.setComplex(key, value)
       .then(() => expect(manager.getComplex(key)).to.eventually.deep.equal(value));
+  });
+
+  it('gets nested objects limited to one level', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+    const limit = 1;
+
+    return manager.setComplex(key, value)
+      .then(() => manager.getComplex(key, limit))
+      .then((result) => {
+        expect(result).to.have.keys(['foo1', 'foo2']);
+        expect(result.foo1).to.be.an.instanceOf(Reference);
+        expect(result.foo2).to.be.an.instanceOf(Reference);
+      });
+  });
+
+  it('gets nested objects limited to two levels', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+    const limit = 2;
+
+    return manager.setComplex(key, value)
+      .then(() => manager.getComplex(key, limit))
+      .then((result) => {
+        expect(result).to.have.keys(['foo1', 'foo2']);
+        expect(result.foo1).to.have.keys(['bar', 'baz', 'foo']);
+        expect(result.foo2).to.have.keys(['bar', 'baz', 'foo']);
+        expect(result.foo1.bar).to.be.an.instanceOf(Reference);
+        expect(result.foo1.baz).to.be.an.instanceOf(Reference);
+        expect(result.foo1.foo).to.be.an.instanceOf(Reference);
+        expect(result.foo2.bar).to.be.an.instanceOf(Reference);
+        expect(result.foo2.baz).to.be.an.instanceOf(Reference);
+        expect(result.foo2.foo).to.be.an.instanceOf(Reference);
+      });
+  });
+
+  it('gets nested objects limited to three levels', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+    const limit = 3;
+
+    return manager.setComplex(key, value)
+      .then(() => manager.getComplex(key, limit))
+      .then((result) => {
+        expect(result).to.have.keys(['foo1', 'foo2']);
+        expect(result.foo1).to.deep.equal({
+          bar: 'bar-value',
+          baz: 'baz-value',
+          foo: 'foo-value',
+        });
+        expect(result.foo2).to.have.keys(['bar', 'baz', 'foo']);
+        expect(result.foo2).to.containSubset({
+          bar: 'bar-value-2',
+          baz: 'baz-value-2',
+        });
+        expect(result.foo2.foo).to.be.an('array');
+        expect(result.foo2.foo).to.have.length(2);
+        expect(result.foo2.foo[0]).to.be.an.instanceOf(Reference);
+        expect(result.foo2.foo[1]).to.be.an.instanceOf(Reference);
+      });
+  });
+
+  it('gets nested objects limited to four levels', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+    const limit = 4;
+
+    return manager.setComplex(key, value)
+      .then(() => manager.getComplex(key, limit))
+      .then((result) => {
+        expect(result).to.have.keys(['foo1', 'foo2']);
+        expect(result.foo1).to.deep.equal({
+          bar: 'bar-value',
+          baz: 'baz-value',
+          foo: 'foo-value',
+        });
+        expect(result.foo2).to.have.keys(['bar', 'baz', 'foo']);
+        expect(result.foo2).to.containSubset({
+          bar: 'bar-value-2',
+          baz: 'baz-value-2',
+        });
+        expect(result.foo2.foo).to.be.an('array');
+        expect(result.foo2.foo).to.have.length(2);
+        expect(result.foo2.foo[0]).to.equal('foo-value-2');
+        expect(result.foo2.foo[1]).to.have.keys(['bar', 'foo']);
+        expect(result.foo2.foo[1].bar).to.be.an.instanceOf(Reference);
+        expect(result.foo2.foo[1].foo).to.be.an.instanceOf(Reference);
+      });
+  });
+
+  it('gets nested objects limited to five levels', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+    const level = 5;
+
+    return manager.setComplex(key, value)
+      .then(() => expect(manager.getComplex(key, level)).to.eventually.deep.equal(value));
   });
 });

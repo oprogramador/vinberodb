@@ -1,3 +1,4 @@
+import Reference from 'grapedb/storage/Reference';
 import _ from 'lodash';
 import bluebird from 'bluebird';
 
@@ -9,11 +10,13 @@ const splitValue = Symbol('splitValue');
 const getExactValue = Symbol('getExactValue');
 const getOne = Symbol('getOne');
 const resolveSelfReferences = Symbol('resolveSelfReferences');
+const maxLevel = Symbol('maxLevel');
 
 class AdvancedManagerGet {
-  constructor(_db, _logger) {
+  constructor(_db, _logger, _maxLevel) {
     this[db] = _db;
     this[logger] = _logger;
+    this[maxLevel] = _maxLevel;
     this[retrieved] = {};
     this[references] = {};
   }
@@ -27,7 +30,7 @@ class AdvancedManagerGet {
     ];
   }
 
-  [getExactValue](value) {
+  [getExactValue](value, level) {
     if (value === null) {
       return null;
     }
@@ -40,22 +43,25 @@ class AdvancedManagerGet {
       return Number(stringified);
     }
     if (type === 'array') {
-      return Promise.all(JSON.parse(stringified).map(key => this[getOne](key)));
+      return Promise.all(JSON.parse(stringified).map(key => this[getOne](key, level)));
     }
     if (type === 'object') {
-      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this[getOne](key)));
+      return bluebird.props(_.mapValues(JSON.parse(stringified), key => this[getOne](key, level)));
     }
 
     return stringified;
   }
 
-  [getOne](key) {
+  [getOne](key, level) {
+    if (level >= this[maxLevel]) {
+      return { key, value: new Reference(key) };
+    }
     if (this[retrieved][key]) {
       return { isSelfReference: true, key };
     }
 
     this[retrieved][key] = this[db].get(key)
-      .then(value => this[getExactValue](value));
+      .then(value => this[getExactValue](value, level + 1));
 
     return this[retrieved][key]
       .then(value => ({ key, value }));
@@ -64,6 +70,9 @@ class AdvancedManagerGet {
   [resolveSelfReferences]({ key, value, isSelfReference }) {
     if (value === null) {
       return null;
+    }
+    if (value instanceof Reference) {
+      return value;
     }
     if (isSelfReference) {
       return this[references][key];
@@ -87,7 +96,7 @@ class AdvancedManagerGet {
   }
 
   get(key) {
-    return this[getOne](key)
+    return this[getOne](key, 0)
       .then(object => this[resolveSelfReferences](object));
   }
 }

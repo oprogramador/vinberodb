@@ -14,8 +14,8 @@ class AdvancedManager {
     return new AdvancedManagerSet(this[db], this[logger]).set(key, value);
   }
 
-  getComplex(key) {
-    return new AdvancedManagerGet(this[db], this[logger]).get(key);
+  getComplex(key, maxLevel) {
+    return new AdvancedManagerGet(this[db], this[logger], maxLevel).get(key);
   }
 
   set(key, value) {
