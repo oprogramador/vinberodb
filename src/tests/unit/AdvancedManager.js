@@ -446,6 +446,38 @@ describe('AdvancedManager', () => {
       });
   });
 
+  it('appends to object with references', () => {
+    const simpleManager = new InMemorySimpleManager();
+    const manager = new AdvancedManager(simpleManager, logger);
+    const key = 'foo-key';
+    const value = {
+      foo1: {
+        bar: 'bar-value',
+        baz: 'baz-value',
+        foo: 'foo-value',
+      },
+      foo2: {
+        bar: 'bar-value-2',
+        baz: 'baz-value-2',
+        foo: [
+          'foo-value-2',
+          {
+            bar: 'foo-value-2-bar-2',
+            foo: 'foo-value-2-foo-2',
+          },
+        ],
+      },
+    };
+    const limit = 2;
+
+    return manager.setComplex(key, value)
+      .then(() => manager.getComplex(key, limit))
+      .then(result => manager.setComplex(key, Object.assign({}, result, { foo3: 'foo-3-value' })))
+      .then(() => expect(manager.getComplex(key))
+        .to.eventually.deep.equal(Object.assign({}, value, { foo3: 'foo-3-value' }))
+      );
+  });
+
   it('gets nested objects limited to three levels', () => {
     const simpleManager = new InMemorySimpleManager();
     const manager = new AdvancedManager(simpleManager, logger);

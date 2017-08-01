@@ -1,3 +1,4 @@
+import Reference from 'grapedb/storage/Reference';
 import _ from 'lodash';
 import uuid from 'uuid';
 
@@ -40,6 +41,9 @@ class AdvancedManagerSet {
   }
 
   [createId](element) {
+    if (element instanceof Reference) {
+      return element.getKey();
+    }
     const savedKey = this[toSave].get(element) || this[saved].get(element);
     if (savedKey) {
       return savedKey;
@@ -76,6 +80,9 @@ class AdvancedManagerSet {
     }
     if (typeof value === 'object') {
       this[saved].set(value, key);
+    }
+    if (value instanceof Reference) {
+      return Promise.resolve();
     }
     const type = this[getType](value);
     if (type === 'array') {
