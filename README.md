@@ -36,7 +36,7 @@ GrapeDB provides the following simple managers:
 - `LevelSimpleManager` - an adapter to [LevelDB](https://github.com/google/leveldb)
 
 Example usage:
-```
+```js
 const { AdvancedManager, InMemorySimpleManager } = require('grapedb');
 
 const logger = {
@@ -71,7 +71,7 @@ manager.setComplex(key, value)
 ```
 
 Usage with LevelDB:
-```
+```js
 const { AdvancedManager, LevelSimpleManager } = require('grapedb');
 const LevelPromise = require('level-promise');
 const levelup = require('levelup');
@@ -82,4 +82,12 @@ const logger = {
 };
 const db = LevelPromise(levelup('my-database'));
 const manager = new AdvancedManager(new LevelSimpleManager(db), logger);
+```
+
+## run locally tests
+```
+git clone https://github.com/oprogramador/grapedb.git
+npm i
+env APP_DIR=src npm run postinstall
+npm t
 ```
