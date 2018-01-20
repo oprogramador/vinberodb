@@ -1,5 +1,5 @@
-import Reference from 'grapedb/storage/Reference';
-import expect from 'grapedb/tests/expect';
+import Reference from 'vinberodb/storage/Reference';
+import expect from 'vinberodb/tests/expect';
 
 describe('Reference', () => {
   it('gets key', () => {

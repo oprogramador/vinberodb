@@ -1,4 +1,4 @@
-import expect from 'grapedb/tests/expect';
+import expect from 'vinberodb/tests/expect';
 
 function testSimpleManager(createManager) {
   describe('SimpleManager', () => {

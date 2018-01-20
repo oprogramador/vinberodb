@@ -1,16 +1,16 @@
-# grapedb
+# vinberodb
 
 [![MIT License](https://img.shields.io/badge/license-mit-green.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.org/oprogramador/grapedb.svg?branch=master)](https://travis-ci.org/oprogramador/grapedb
+[![Build Status](https://travis-ci.org/oprogramador/vinberodb.svg?branch=master)](https://travis-ci.org/oprogramador/vinberodb
 )
 
-[![NPM status](https://nodei.co/npm/grapedb.png?downloads=true&stars=true)](https://npmjs.org/package/grapedb
+[![NPM status](https://nodei.co/npm/vinberodb.png?downloads=true&stars=true)](https://npmjs.org/package/vinberodb
 )
 
 GrapeDB is a distributed object database. It can be also considered as an ODM.
 
 ## install
-`npm install --save grapedb`
+`npm install --save vinberodb`
 
 ## usage
 The main class is `AdvancedManager` which has the following public methods:
@@ -37,7 +37,7 @@ GrapeDB provides the following simple managers:
 
 Example usage:
 ```js
-const { AdvancedManager, InMemorySimpleManager } = require('grapedb');
+const { AdvancedManager, InMemorySimpleManager } = require('vinberodb');
 
 const logger = {
   error: () => {},
@@ -72,7 +72,7 @@ manager.setComplex(key, value)
 
 Usage with LevelDB:
 ```js
-const { AdvancedManager, LevelSimpleManager } = require('grapedb');
+const { AdvancedManager, LevelSimpleManager } = require('vinberodb');
 const LevelPromise = require('level-promise');
 const levelup = require('levelup');
 
@@ -86,7 +86,7 @@ const manager = new AdvancedManager(new LevelSimpleManager(db), logger);
 
 ## run locally tests
 ```
-git clone https://github.com/oprogramador/grapedb.git
+git clone https://github.com/oprogramador/vinberodb.git
 npm i
 env APP_DIR=src npm run postinstall
 npm t

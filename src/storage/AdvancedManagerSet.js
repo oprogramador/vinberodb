@@ -1,4 +1,4 @@
-import Reference from 'grapedb/storage/Reference';
+import Reference from 'vinberodb/storage/Reference';
 import _ from 'lodash';
 import uuid from 'uuid';
 

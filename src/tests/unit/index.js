@@ -3,8 +3,8 @@ import {
   InMemorySimpleManager,
   LevelSimpleManager,
   Reference,
-} from 'grapedb/index';
-import expect from 'grapedb/tests/expect';
+} from 'vinberodb/index';
+import expect from 'vinberodb/tests/expect';
 
 describe('index', () => {
   it('returns AdvancedManager', () => {

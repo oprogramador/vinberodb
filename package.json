@@ -1,5 +1,5 @@
 {
-  "name": "grapedb",
+  "name": "vinberodb",
   "version": "2.1.4",
   "description": "Distributed object database",
   "main": "build/index.js",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oprogramador/grapedb.git"
+    "url": "git+https://github.com/oprogramador/vinberodb.git"
   },
   "keywords": [
     "distributed",
@@ -28,9 +28,9 @@
   "author": "oprogramador",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/oprogramador/grapedb/issues"
+    "url": "https://github.com/oprogramador/vinberodb/issues"
   },
-  "homepage": "https://github.com/oprogramador/grapedb#readme",
+  "homepage": "https://github.com/oprogramador/vinberodb#readme",
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-core": "^6.24.0",

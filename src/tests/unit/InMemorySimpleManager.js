@@ -1,5 +1,5 @@
-import InMemorySimpleManager from 'grapedb/storage/InMemorySimpleManager';
-import testSimpleManager from 'grapedb/tests/generic/testSimpleManager';
+import InMemorySimpleManager from 'vinberodb/storage/InMemorySimpleManager';
+import testSimpleManager from 'vinberodb/tests/generic/testSimpleManager';
 
 describe('InMemorySimpleManager', () => {
   testSimpleManager(() => new InMemorySimpleManager());

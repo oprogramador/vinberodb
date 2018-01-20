@@ -1,9 +1,9 @@
-import AdvancedManager from 'grapedb/storage/AdvancedManager';
-import InMemorySimpleManager from 'grapedb/storage/InMemorySimpleManager';
-import Reference from 'grapedb/storage/Reference';
-import expect from 'grapedb/tests/expect';
+import AdvancedManager from 'vinberodb/storage/AdvancedManager';
+import InMemorySimpleManager from 'vinberodb/storage/InMemorySimpleManager';
+import Reference from 'vinberodb/storage/Reference';
+import expect from 'vinberodb/tests/expect';
 import sinon from 'sinon';
-import testSimpleManager from 'grapedb/tests/generic/testSimpleManager';
+import testSimpleManager from 'vinberodb/tests/generic/testSimpleManager';
 
 const logger = {
   error: sinon.spy(),

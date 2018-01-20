@@ -1,8 +1,8 @@
 import LevelPromise from 'level-promise';
-import LevelSimpleManager from 'grapedb/storage/LevelSimpleManager';
+import LevelSimpleManager from 'vinberodb/storage/LevelSimpleManager';
 import levelup from 'levelup';
 import rimraf from 'rimraf';
-import testSimpleManager from 'grapedb/tests/generic/testSimpleManager';
+import testSimpleManager from 'vinberodb/tests/generic/testSimpleManager';
 
 const testDbDirectory = `${__dirname}/../../../../leveldb-test`;
 let db;

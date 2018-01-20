@@ -1,5 +1,5 @@
-import AdvancedManagerGet from 'grapedb/storage/AdvancedManagerGet';
-import AdvancedManagerSet from 'grapedb/storage/AdvancedManagerSet';
+import AdvancedManagerGet from 'vinberodb/storage/AdvancedManagerGet';
+import AdvancedManagerSet from 'vinberodb/storage/AdvancedManagerSet';
 
 const db = Symbol('db');
 const logger = Symbol('logger');
