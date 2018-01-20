@@ -7,7 +7,7 @@
 [![NPM status](https://nodei.co/npm/vinberodb.png?downloads=true&stars=true)](https://npmjs.org/package/vinberodb
 )
 
-GrapeDB is a distributed object database. It can be also considered as an ODM.
+VinberoDB is a distributed object database. It can be also considered as an ODM.
 
 ## install
 `npm install --save vinberodb`
@@ -31,7 +31,7 @@ The simple manager should have the following methods:
 - `get(key)`
 - `set(key, value)` - value is always a string
 
-GrapeDB provides the following simple managers:
+VinberoDB provides the following simple managers:
 - `InMemorySimpleManager` - saves objects only in JavaScript memory (RAM)
 - `LevelSimpleManager` - an adapter to [LevelDB](https://github.com/google/leveldb)
 
