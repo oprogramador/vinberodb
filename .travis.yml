@@ -2,7 +2,7 @@ sudo: false
 language: node_js
 node_js:
   - 6
-  - node
+  - 8
 script:
   - npm install
   - APP_DIR=src npm run postinstall
