@@ -4,6 +4,7 @@ node_js:
   - 6
   - 8
 script:
+  - APP_DIR=src scripts/create-project-symlink.sh
   - npm install
   - APP_DIR=src npm run postinstall
   - npm run lint
