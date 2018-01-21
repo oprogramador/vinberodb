@@ -2,7 +2,7 @@ import LevelPromise from 'level-promise';
 import LevelSimpleManager from 'vinberodb/storage/LevelSimpleManager';
 import levelup from 'levelup';
 import rimraf from 'rimraf';
-import testSimpleManager from 'vinberodb/tests/generic/testSimpleManager';
+import { testSimpleManager } from 'vinberodb-test-helpers';
 
 const testDbDirectory = `${__dirname}/../../../../leveldb-test`;
 let db;

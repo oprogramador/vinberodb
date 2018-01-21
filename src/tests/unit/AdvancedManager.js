@@ -3,7 +3,7 @@ import InMemorySimpleManager from 'vinberodb/storage/InMemorySimpleManager';
 import Reference from 'vinberodb/storage/Reference';
 import expect from 'vinberodb/tests/expect';
 import sinon from 'sinon';
-import testSimpleManager from 'vinberodb/tests/generic/testSimpleManager';
+import { testSimpleManager } from 'vinberodb-test-helpers';
 
 const logger = {
   error: sinon.spy(),
