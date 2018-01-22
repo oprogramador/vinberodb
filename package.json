@@ -1,6 +1,6 @@
 {
   "name": "vinberodb",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "Distributed object database",
   "main": "build/index.js",
   "scripts": {
