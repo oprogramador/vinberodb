@@ -1,10 +1,10 @@
 {
   "name": "vinberodb",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "Distributed object database",
   "main": "build/index.js",
   "scripts": {
-    "build": "rm -rf build && babel src --out-dir build --ignore tests",
+    "build": "rm -rf build && babel src --out-dir build --ignore tests/",
     "create-project-symlink": "scripts/create-project-symlink.sh",
     "lint": "eslint src",
     "postinstall": "npm run create-project-symlink",
