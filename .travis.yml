@@ -11,8 +11,8 @@ script:
   - npm test
 deploy:
   provider: npm
-  api_key: NPM_TOKEN
-  email: NPM_EMAIL
+  api_key: $NPM_TOKEN
+  email: $NPM_EMAIL
   on:
     branch: master
 notifications:
