@@ -9,6 +9,7 @@ script:
   - APP_DIR=src npm run postinstall
   - npm run lint
   - npm test
+before_deploy: 'npm run prepublishOnly'
 deploy:
   provider: npm
   api_key: $NPM_TOKEN
