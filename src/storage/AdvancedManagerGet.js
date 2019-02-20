@@ -89,7 +89,7 @@ class AdvancedManagerGet {
       reference,
       Array.isArray(value)
         ? value.map(innerValue => this[resolveSelfReferences](innerValue))
-        : _.mapValues(value, innerValue => this[resolveSelfReferences](innerValue))
+        : _.mapValues(value, innerValue => this[resolveSelfReferences](innerValue)),
     );
 
     return reference;
