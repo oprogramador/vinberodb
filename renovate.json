@@ -1,14 +1,20 @@
 {
-  "commitMessage": "[renovate] update all dependencies",
-  "groupName": "All",
-  "labels": ["renovate"],
+  "commitMessagePrefix": "[renovate] ",
+  "groupName": "all dependencies",
+  "labels": [
+    "renovate"
+  ],
   "packageRules": [
     {
-      "packageNames": ["leveldown"],
+      "packageNames": [
+        "leveldown"
+      ],
       "allowedVersions": "<2.0.0"
     },
     {
-      "packageNames": ["levelup"],
+      "packageNames": [
+        "levelup"
+      ],
       "allowedVersions": "<2.0.0"
     }
   ],
