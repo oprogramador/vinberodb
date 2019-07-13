@@ -48,7 +48,7 @@
     "sinon": "^7.3.2",
     "sinon-as-promised": "^4.0.3",
     "sinon-chai": "^3.3.0",
-    "vinberodb-test-helpers": "^2.0.1"
+    "vinberodb-test-helpers": "^2.0.2"
   },
   "dependencies": {
     "bluebird": "^3.5.5",
