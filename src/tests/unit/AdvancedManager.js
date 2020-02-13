@@ -472,9 +472,9 @@ describe('AdvancedManager', () => {
 
     return manager.setComplex(key, value)
       .then(() => manager.getComplex(key, limit))
-      .then(result => manager.setComplex(key, Object.assign({}, result, { foo3: 'foo-3-value' })))
+      .then(result => manager.setComplex(key, { ...result, foo3: 'foo-3-value' }))
       .then(() => expect(manager.getComplex(key))
-        .to.eventually.deep.equal(Object.assign({}, value, { foo3: 'foo-3-value' })));
+        .to.eventually.deep.equal({ ...value, foo3: 'foo-3-value' }));
   });
 
   it('gets nested objects limited to three levels', () => {
